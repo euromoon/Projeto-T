@@ -47,6 +47,7 @@ public class Personagem : KinematicBody2D
         if (doubleJumpAvailable)
         {
           doubleJumpAvailable = false;
+          sprite.Scale = new Vector2(0.16f, 0.16f);
           velocity.y = -doubleJumpHeight;
         }
         else
@@ -59,9 +60,24 @@ public class Personagem : KinematicBody2D
       {
         velocity.y += 7f;
       }
+      if (IsOnCeiling())
+      {
+        // Parar de pular quando bater no teto
+        velocity.y = 0;
+      }
+      // Deformar a bola quando cair/subir.
+      if (velocity.y > 0)
+      {
+        sprite.Scale = new Vector2(Math.Max(sprite.Scale.x - 0.001f, 0.11f), Math.Min(sprite.Scale.y + 0.001f, 0.20f));
+      }
+      else
+      {
+        sprite.Scale = new Vector2(Math.Min(sprite.Scale.x + 0.001f, 0.17f), Math.Max(sprite.Scale.y - 0.001f, 0.15f));
+      }
     }
     else
     {
+      sprite.Scale = new Vector2(Math.Min(sprite.Scale.x + 0.02f, 0.16f), Math.Max(sprite.Scale.y - 0.02f, 0.16f));
       doubleJumpAvailable = true;
       // Pulo
       if (Input.IsActionJustPressed("ui_up"))
