@@ -1,0 +1,108 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://Personagem.cs" type="Script" id=1]
+[ext_resource path="res://textures/background-0.png" type="Texture" id=2]
+[ext_resource path="res://textures/character.png" type="Texture" id=3]
+[ext_resource path="res://textures/background-1.png" type="Texture" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 1, 0.2 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 2, 0.2 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 8, 1 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 3, 0.2 )
+
+[sub_resource type="RectangleShape2D" id=5]
+
+[node name="World" type="Node2D"]
+
+[node name="Background" type="Node2D" parent="."]
+position = Vector2( 521, 303 )
+scale = Vector2( 68.0556, 68.0556 )
+
+[node name="0" type="Sprite" parent="Background"]
+scale = Vector2( 1, 1 )
+texture = ExtResource( 2 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Background"]
+position = Vector2( 5.11347, -1.77796 )
+scale = Vector2( 1, 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="Background/StaticBody2D"]
+position = Vector2( -2.38419e-07, 0 )
+scale = Vector2( 0.222041, 0.042449 )
+texture = ExtResource( 4 )
+
+[node name="Plataforma0" type="CollisionShape2D" parent="Background/StaticBody2D"]
+position = Vector2( 0, -2.38419e-07 )
+scale = Vector2( 1, 1 )
+shape = SubResource( 1 )
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="Background"]
+position = Vector2( -2.73306, -1.11674 )
+scale = Vector2( 1, 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="Background/StaticBody2D2"]
+position = Vector2( -4.76837e-07, 0 )
+scale = Vector2( 0.45, 0.045 )
+texture = ExtResource( 4 )
+
+[node name="Plataforma1" type="CollisionShape2D" parent="Background/StaticBody2D2"]
+position = Vector2( -4.76837e-07, 0 )
+scale = Vector2( 1, 1 )
+shape = SubResource( 2 )
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="Background"]
+position = Vector2( -0.205712, 3.65878 )
+scale = Vector2( 0.999999, 0.999999 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="Background/StaticBody2D3"]
+scale = Vector2( 1.8, 0.22 )
+texture = ExtResource( 4 )
+
+[node name="Plataforma2" type="CollisionShape2D" parent="Background/StaticBody2D3"]
+scale = Vector2( 1, 1 )
+shape = SubResource( 3 )
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="Background"]
+position = Vector2( 1.49878, 1.33714 )
+scale = Vector2( 0.999999, 0.999999 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="Background/StaticBody2D4"]
+scale = Vector2( 0.66, 0.045 )
+texture = ExtResource( 4 )
+
+[node name="Plataforma3" type="CollisionShape2D" parent="Background/StaticBody2D4"]
+scale = Vector2( 1, 1 )
+shape = SubResource( 4 )
+
+[node name="Personagem" type="KinematicBody2D" parent="."]
+position = Vector2( 346, 220 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Personagem"]
+shape = SubResource( 5 )
+
+[node name="Sprite" type="Sprite" parent="Personagem"]
+scale = Vector2( 0.16, 0.16 )
+texture = ExtResource( 3 )
