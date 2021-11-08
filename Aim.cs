@@ -22,6 +22,7 @@ public class Aim : Sprite
       var mousePos = GetGlobalMousePosition();
       // Atan2 retorna o valor do ângulo (em radianos) no qual a tangente é igual à divisão entre os 2 argumentos.
       // Ou seja, retorna a rotação necessária para o objeto olhar na direção do mouse.
-      Rotation = Mathf.Atan2(mousePos.y - GlobalPosition.y, mousePos.x - GlobalPosition.x);
+      GlobalRotation = Mathf.Atan2(mousePos.y - GlobalPosition.y, mousePos.x - GlobalPosition.x);
+      GlobalScale = new Vector2(.1f, .1f); // Não deformar a mira junto do resto do personagem
     }
 }
