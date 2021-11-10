@@ -21,12 +21,13 @@ public class Personagem : KinematicBody2D
   private List<Vector2> _positionUpdateQueue = new List<Vector2>();
   private int _frameCount = 0;
   private Vector2 _distanceToUpdate = new Vector2(0, 0);
-  private bool _waitingDeath = false;
+  private int _bombCount = 0;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
     sprite = GetNode<Sprite>("Sprite");
+    GetNode<Label>("NameLabel").Text = Name;
     if (IsNetworkMaster()) GetNode<Sprite>("Aim").Visible = true;
   }
 
@@ -37,27 +38,52 @@ public class Personagem : KinematicBody2D
   }
 
   [RemoteSync]
-  private void throwBomb(Vector2 dir)
+  private void throwBomb(Vector2 dir, string projectileName)
   {
     var bomba = projetil.Instance<Projétil>();
+    bomba.AddCollisionExceptionWith(this); // não colidir com o próprio personagem
     bomba.Position = Position;
+    bomba.Thrower = this;
+    bomba.Name = projectileName;
     GetParent().AddChild(bomba);
-    bomba.Name = GetParent().GetNode<Personagem>(GetTree().GetRpcSenderId().ToString()).Name + "_bomba";
     bomba.SetNetworkMaster(GetTree().GetRpcSenderId());
     bomba.SetProjectileDirection(dir, Velocity);
   }
 
   [RemoteSync]
+  private void _announce(string announcement)
+  {
+    // criar uma caixa de texto
+    var announcementLabel = new Label();
+    var theme = new Theme();
+    // carregar a fonte do texto
+    announcementLabel.AddFontOverride("font", GD.Load<Font>("res://other_assets/font.tres"));
+    announcementLabel.Text = announcement; // mudar texto na caixa de texto
+    announcementLabel.RectSize = new Vector2(1024, 60); // tamanho da caixa do texto
+    announcementLabel.RectPivotOffset = new Vector2(512, 0); // colocar o centro da caixa no meio dela
+    announcementLabel.Align = Label.AlignEnum.Center; // alinhar o texto com o centro
+    var timer = new Timer(); // timer de 2 segundos para apagar o anúncio
+    timer.WaitTime = 3;
+    timer.OneShot = true; // não reiniciar o timer após acabar
+    timer.Autostart = true;
+    announcementLabel.AddChild(timer);
+    GetParent().AddChild(announcementLabel);
+    // conectar o evento do fim do timer com a função que apaga o texto
+    timer.Connect("timeout", announcementLabel, "queue_free");
+  }
+
+  [RemoteSync]
   private void _die()
   {
-    _waitingDeath = true;
+    // anunciar a morte do jogador.
+    _announce(Name + " foi eliminado");
     QueueFree();
   }
 
   // Called every frame. 'delta' is the elapsed time since the previous frame.
   public override void _Process(float delta)
   {
-    if (IsNetworkMaster() && !_waitingDeath)
+    if (IsNetworkMaster())
     {
       if (Position.y > 760)
       {
@@ -128,7 +154,8 @@ public class Personagem : KinematicBody2D
 
       if (Input.IsActionJustPressed("combat_attack"))
       {
-        Rpc(nameof(throwBomb), GetGlobalMousePosition());
+        _bombCount++;
+        Rpc(nameof(throwBomb), GetGlobalMousePosition(), GetTree().GetNetworkUniqueId().ToString() + "_bomba" + _bombCount.ToString());
       }
 
       MoveAndSlide(Velocity, new Vector2(0, -1));

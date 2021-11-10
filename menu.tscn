@@ -1,16 +1,54 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://textures/Poppins-Medium.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://textures/background-0.png" type="Texture" id=2]
-[ext_resource path="res://menu.cs" type="Script" id=3]
+[ext_resource path="res://scripts/menu.cs" type="Script" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 64
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=2]
 size = 64
+use_filter = true
 font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=4]
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+content_margin_left = 5.0
+content_margin_top = 5.0
+bg_color = Color( 1, 1, 1, 0 )
+border_width_bottom = 5
+
+[sub_resource type="DynamicFont" id=10]
+size = 14
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=9]
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 18
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=8]
+content_margin_left = 5.0
+content_margin_top = 5.0
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_bottom = 5
+
+[sub_resource type="DynamicFont" id=6]
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=7]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
 
 [node name="Menu" type="Node2D"]
 script = ExtResource( 3 )
@@ -24,32 +62,89 @@ texture = ExtResource( 2 )
 position = Vector2( 390, 180 )
 
 [node name="ServerButton" type="MenuButton" parent="Options"]
-margin_right = 245.0
-margin_bottom = 97.0
+margin_left = 30.0
+margin_right = 230.0
+margin_bottom = 100.0
+rect_pivot_offset = Vector2( 100, 50 )
 custom_colors/font_color_hover = Color( 0.513726, 0.513726, 0.513726, 1 )
 custom_fonts/font = SubResource( 1 )
-text = "SERVER"
+text = "host"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ClientButton" type="MenuButton" parent="Options"]
-margin_left = 15.0
-margin_top = 100.0
-margin_right = 238.0
-margin_bottom = 197.0
+margin_left = -136.0
+margin_top = 112.0
+margin_right = 154.0
+margin_bottom = 212.0
+rect_pivot_offset = Vector2( 145, 50 )
 custom_colors/font_color_hover = Color( 0.513726, 0.513726, 0.513726, 1 )
 custom_fonts/font = SubResource( 2 )
-text = "CLIENT"
+text = "connect:"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="IPInput" type="TextEdit" parent="Options"]
-margin_left = 30.0
-margin_top = 180.0
-margin_right = 223.0
-margin_bottom = 220.0
+margin_left = 168.0
+margin_top = 146.0
+margin_right = 377.0
+margin_bottom = 186.0
+custom_fonts/font = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="IPLabel" type="Label" parent="Options"]
+margin_left = 228.0
+margin_top = 121.0
+margin_right = 320.0
+margin_bottom = 144.0
+custom_fonts/font = SubResource( 10 )
+text = "ip address"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="usernameOptions" type="Node2D" parent="Options"]
+position = Vector2( 63, -175 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="usernameLabel" type="Label" parent="Options/usernameOptions"]
+margin_left = 25.0
+margin_right = 111.0
+margin_bottom = 23.0
+custom_fonts/font = SubResource( 9 )
+text = "username:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="username" type="TextEdit" parent="Options/usernameOptions"]
+margin_top = 20.0
+margin_right = 138.0
+margin_bottom = 60.0
+rect_pivot_offset = Vector2( 69, 0 )
+custom_fonts/font = SubResource( 3 )
+custom_styles/normal = SubResource( 8 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="usernameError" type="Label" parent="Options/usernameOptions"]
+visible = false
+margin_left = -51.0
+margin_top = 67.0
+margin_right = 190.0
+margin_bottom = 90.0
+custom_colors/font_color = Color( 1, 0.25098, 0.25098, 1 )
+custom_fonts/font = SubResource( 6 )
+custom_styles/normal = SubResource( 7 )
+text = "escolha um nome de usuário!"
 __meta__ = {
 "_edit_use_anchors_": false
 }
