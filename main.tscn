@@ -1,89 +1,185 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=16 format=2]
 
-[ext_resource path="res://textures/background-0.png" type="Texture" id=2]
-[ext_resource path="res://textures/background-1.png" type="Texture" id=4]
+[ext_resource path="res://Plataforma.cs" type="Script" id=1]
+[ext_resource path="res://tilsets/ground.tres" type="TileSet" id=2]
+[ext_resource path="res://textures/wall.png" type="Texture" id=3]
 [ext_resource path="res://main.cs" type="Script" id=7]
 
+[sub_resource type="TileSet" id=5]
+0/name = "wall.png 0"
+0/texture = ExtResource( 3 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 1, 1, 14, 9 )
+0/tile_mode = 1
+0/autotile/bitmask_mode = 0
+0/autotile/bitmask_flags = [  ]
+0/autotile/icon_coordinate = Vector2( 0, 0 )
+0/autotile/tile_size = Vector2( 24, 24 )
+0/autotile/spacing = 0
+0/autotile/occluder_map = [  ]
+0/autotile/navpoly_map = [  ]
+0/autotile/priority_map = [  ]
+0/autotile/z_index_map = [  ]
+0/occluder_offset = Vector2( 0, 0 )
+0/navigation_offset = Vector2( 0, 0 )
+0/shape_offset = Vector2( 0, 0 )
+0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+0/shape_one_way = false
+0/shape_one_way_margin = 0.0
+0/shapes = [  ]
+0/z_index = 0
+
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 1, 0.2 )
+extents = Vector2( 44, 21 )
+
+[sub_resource type="OccluderPolygon2D" id=10]
+polygon = PoolVector2Array( -43, -21, -43, 21, 44, 21, 44, -21 )
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 2, 0.2 )
+extents = Vector2( 215, 21 )
+
+[sub_resource type="OccluderPolygon2D" id=11]
+polygon = PoolVector2Array( -215, -21, -215, 22, 215, 21, 215, -20 )
+
+[sub_resource type="OccluderPolygon2D" id=7]
+polygon = PoolVector2Array( -130, -22, -130, 21, 130, 22, 130, -22 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 8, 1 )
+extents = Vector2( 130, 22 )
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 3, 0.2 )
+extents = Vector2( 260, 42 )
+
+[sub_resource type="OccluderPolygon2D" id=8]
+polygon = PoolVector2Array( -144.445, -24.4445, -145, 23.3333, 143.889, 23.3333, 143.889, -23.8889 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 130, 44 )
+
+[sub_resource type="OccluderPolygon2D" id=9]
+polygon = PoolVector2Array( -131, -43.0001, -130, 43, 130, 45, 130, -43.0001 )
 
 [node name="World" type="Node2D"]
 script = ExtResource( 7 )
 
 [node name="Background" type="Node2D" parent="."]
-position = Vector2( 512, 300 )
-scale = Vector2( 65, 68.056 )
 
-[node name="0" type="Sprite" parent="Background"]
-texture = ExtResource( 2 )
+[node name="TileMap" type="TileMap" parent="Background"]
+modulate = Color( 0.733333, 0.733333, 0.733333, 1 )
+position = Vector2( -7.87692, -4.40813 )
+scale = Vector2( 8, 8 )
+tile_set = SubResource( 5 )
+cell_size = Vector2( 24, 24 )
+cell_quadrant_size = 32
+cell_custom_transform = Transform2D( 128, 0, 0, 128, 0, 0 )
+format = 1
+tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 65536, 0, 0, 65537, 0, 0, 65538, 0, 0, 65539, 0, 0, 65540, 0, 0, 65541, 0, 0, 131072, 0, 0, 131073, 0, 0, 131074, 0, 0, 131075, 0, 0, 131076, 0, 0, 131077, 0, 0, 196608, 0, 0, 196609, 0, 0, 196610, 0, 0, 196611, 0, 0, 196612, 0, 0, 196613, 0, 0, 1310760, 0, 0 )
 
-[node name="StaticBody2D" type="StaticBody2D" parent="Background"]
-position = Vector2( 5.11347, -1.77796 )
-collision_layer = 2
+[node name="Plataforma" type="KinematicBody2D" parent="Background"]
+position = Vector2( 832, 394 )
+collision_layer = 0
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="Background/StaticBody2D"]
-position = Vector2( -2.38419e-07, 0 )
-scale = Vector2( 0.222041, 0.042449 )
-texture = ExtResource( 4 )
+[node name="TileMap" type="TileMap" parent="Background/Plataforma"]
+position = Vector2( 0, 22 )
+scale = Vector2( 1.8, 1.8 )
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 24, 24 )
+format = 1
+tile_data = PoolIntArray( -1, 0, 0, -65536, 0, 0 )
 
-[node name="Plataforma0" type="CollisionShape2D" parent="Background/StaticBody2D"]
+[node name="Plataforma0" type="CollisionShape2D" parent="Background/Plataforma"]
 position = Vector2( 0, -2.38419e-07 )
 shape = SubResource( 1 )
 
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Background/Plataforma"]
+occluder = SubResource( 10 )
+
 [node name="StaticBody2D2" type="StaticBody2D" parent="Background"]
-position = Vector2( -2.73306, -1.11674 )
+position = Vector2( 251, 191 )
 collision_layer = 2
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="Background/StaticBody2D2"]
-position = Vector2( -4.76837e-07, 0 )
-scale = Vector2( 0.45, 0.045 )
-texture = ExtResource( 4 )
+[node name="TileMap" type="TileMap" parent="Background/StaticBody2D2"]
+position = Vector2( 0, 22 )
+scale = Vector2( 1.8, 1.8 )
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 24, 24 )
+cell_quadrant_size = 24
+format = 1
+tile_data = PoolIntArray( -5, 0, 0, -4, 0, 0, -3, 0, 0, -2, 0, 0, -1, 0, 0, -65536, 0, 0, -65535, 0, 0, -65534, 0, 0, -65533, 0, 0, -65532, 0, 0 )
 
 [node name="Plataforma1" type="CollisionShape2D" parent="Background/StaticBody2D2"]
 position = Vector2( -4.76837e-07, 0 )
 shape = SubResource( 2 )
 
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Background/StaticBody2D2"]
+occluder = SubResource( 11 )
+
 [node name="StaticBody2D3" type="StaticBody2D" parent="Background"]
-position = Vector2( 0, 3.659 )
+position = Vector2( 413, 302 )
 scale = Vector2( 0.999999, 0.999999 )
 collision_layer = 2
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="Background/StaticBody2D3"]
-scale = Vector2( 1.8, 0.22 )
-texture = ExtResource( 4 )
+[node name="TileMap" type="TileMap" parent="Background/StaticBody2D3"]
+position = Vector2( 0, 21 )
+scale = Vector2( 1.8, 1.8 )
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 24, 24 )
+format = 1
+tile_data = PoolIntArray( -3, 0, 0, -2, 0, 0, -1, 0, 0, -65536, 0, 0, -65535, 0, 0, -65534, 0, 0 )
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Background/StaticBody2D3"]
+scale = Vector2( 1, 1 )
+occluder = SubResource( 7 )
 
 [node name="Plataforma2" type="CollisionShape2D" parent="Background/StaticBody2D3"]
 shape = SubResource( 3 )
 
 [node name="StaticBody2D4" type="StaticBody2D" parent="Background"]
-position = Vector2( 1.49878, 1.33714 )
+position = Vector2( 250, 585 )
 scale = Vector2( 0.999999, 0.999999 )
 collision_layer = 2
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="Sprite" type="Sprite" parent="Background/StaticBody2D4"]
-scale = Vector2( 0.66, 0.045 )
-texture = ExtResource( 4 )
+[node name="TileMap" type="TileMap" parent="Background/StaticBody2D4"]
+scale = Vector2( 1.8, 1.8 )
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 24, 24 )
+format = 1
+tile_data = PoolIntArray( -6, 0, 0, -5, 0, 0, -4, 0, 0, -3, 0, 0, -2, 0, 0, -1, 0, 0, -65536, 0, 0, -65535, 0, 0, -65534, 0, 0, -65533, 0, 0, -65532, 0, 0, -65531, 0, 0, 65530, 0, 0, 65531, 0, 0, 65532, 0, 0, 65533, 0, 0, 65534, 0, 0, 65535, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0 )
 
 [node name="Plataforma3" type="CollisionShape2D" parent="Background/StaticBody2D4"]
 shape = SubResource( 4 )
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Background/StaticBody2D4"]
+scale = Vector2( 1.8, 1.8 )
+occluder = SubResource( 8 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Background"]
+position = Vector2( 912, 580 )
+scale = Vector2( 0.999999, 0.999999 )
+
+[node name="TileMap" type="TileMap" parent="Background/StaticBody2D"]
+scale = Vector2( 1.8, 1.8 )
+tile_set = ExtResource( 2 )
+cell_size = Vector2( 24, 24 )
+format = 1
+tile_data = PoolIntArray( -3, 0, 0, -2, 0, 0, -1, 0, 0, -65536, 0, 0, -65535, 0, 0, -65534, 0, 0, 65533, 0, 0, 65534, 0, 0, 65535, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0 )
+
+[node name="Plataforma4" type="CollisionShape2D" parent="Background/StaticBody2D"]
+shape = SubResource( 6 )
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Background/StaticBody2D"]
+occluder = SubResource( 9 )

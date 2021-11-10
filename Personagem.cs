@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 // Bugs conhecidos:
 // 1. Personagens de outros jogadores estão se esticando demais quando caem no chão
@@ -16,6 +18,10 @@ public class Personagem : KinematicBody2D
   private bool doubleJumpAvailable = true;
   private Sprite sprite;
   private PackedScene projetil = GD.Load<PackedScene>("res://entities/bomba.tscn");
+  private List<Vector2> _positionUpdateQueue = new List<Vector2>();
+  private int _frameCount = 0;
+  private Vector2 _distanceToUpdate = new Vector2(0, 0);
+  private bool _waitingDeath = false;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
@@ -25,33 +31,38 @@ public class Personagem : KinematicBody2D
   }
 
   [Remote]
-  private void setPosition(Vector2 position)
-  {
-    Position = position;
-  }
-
-  /* [Remote]
-  private void updateNetworkPeers(Vector2 pos, Vector2 velocity)
+  public void _updatePosition(Vector2 pos)
   {
     Position = pos;
-    Velocity = velocity;
-    Rpc(nameof(setPositionAndVelocity), Position, Velocity);
-  } */
+  }
 
   [RemoteSync]
   private void throwBomb(Vector2 dir)
   {
     var bomba = projetil.Instance<Projétil>();
     bomba.Position = Position;
-    bomba.SetProjectileDirection(dir, Velocity);
     GetParent().AddChild(bomba);
+    bomba.Name = GetParent().GetNode<Personagem>(GetTree().GetRpcSenderId().ToString()).Name + "_bomba";
+    bomba.SetNetworkMaster(GetTree().GetRpcSenderId());
+    bomba.SetProjectileDirection(dir, Velocity);
+  }
+
+  [RemoteSync]
+  private void _die()
+  {
+    _waitingDeath = true;
+    QueueFree();
   }
 
   // Called every frame. 'delta' is the elapsed time since the previous frame.
   public override void _Process(float delta)
   {
-    if (IsNetworkMaster())
+    if (IsNetworkMaster() && !_waitingDeath)
     {
+      if (Position.y > 760)
+      {
+        Rpc(nameof(_die));
+      }
       if (Input.IsActionPressed("ui_right"))
       {
         Velocity.x = Math.Min(Velocity.x + acceleration, max_speed);
@@ -121,7 +132,7 @@ public class Personagem : KinematicBody2D
       }
 
       MoveAndSlide(Velocity, new Vector2(0, -1));
-      Rpc(nameof(setPosition), Position);
+      Rpc(nameof(_updatePosition), Position);
       Rset(nameof(Velocity), Velocity);
     }
     // Deformar a bola quando cair/subir.
