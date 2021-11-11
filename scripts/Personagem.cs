@@ -13,6 +13,8 @@ public class Personagem : KinematicBody2D
   public Vector2 Velocity = new Vector2(0, 0);
   [RemoteSync]
   public bool Dead = false;
+  [RemoteSync]
+  public float SuperBombCharge = 0;
   public main World;
   private int max_speed = 240;
   private float acceleration = 8f;
@@ -42,13 +44,14 @@ public class Personagem : KinematicBody2D
   }
 
   [RemoteSync]
-  private void throwBomb(Vector2 dir, string projectileName)
+  private void throwBomb(Vector2 dir, string projectileName, bool isSuperBomb = false)
   {
     var bomba = projetil.Instance<Projétil>();
     bomba.AddCollisionExceptionWith(this); // não colidir com o próprio personagem
     bomba.Position = Position;
     bomba.Thrower = this;
     bomba.Name = projectileName;
+    bomba.IsSuperBomb = isSuperBomb;
     GetParent().AddChild(bomba);
     bomba.SetNetworkMaster(GetTree().GetRpcSenderId());
     bomba.SetProjectileDirection(dir, Velocity);
@@ -111,14 +114,15 @@ public class Personagem : KinematicBody2D
         {
           Velocity.y += 7f;
         }
+        // Quicar quando bater no teto ou na parede
         if (IsOnCeiling())
         {
-          // Parar de pular quando bater no teto
-          Velocity.y = 0;
+          Velocity.y *= -.8f;
         }
         if (IsOnWall())
         {
-          Velocity.x = 0;
+          Velocity.x *= -.8f;
+          doubleJumpAvailable = true;
         }
       }
       else
@@ -149,7 +153,23 @@ public class Personagem : KinematicBody2D
       if (Input.IsActionJustPressed("combat_attack"))
       {
         _bombCount++;
-        Rpc(nameof(throwBomb), GetGlobalMousePosition(), GetTree().GetNetworkUniqueId().ToString() + "_bomba" + _bombCount.ToString());
+        bool isSuperBomb = false;
+        // esse if deveria ser SuperBombCharge == 1, porém matemática com números decimais
+        // em programação nem sempre da certo, e o valor de SuperBombCharge pode chegar a valores como
+        // 0.999999999, então é necessário checar se o módulo da diferença entre 1 e SuperBombCharge é
+        // pequeno a ponto de ser irrelevante, ao invés de checar se são literalmente idênticos.
+        // recomendo ler mais sobre em: https://stackoverflow.com/questions/588004/is-floating-point-math-broken
+        if ((Math.Abs(1 - SuperBombCharge) < 0.01))
+        {
+          isSuperBomb = true;
+          SuperBombCharge = 0;
+        }
+        if (isSuperBomb)
+        {
+          var superBomb = World.UI.GetNode<Sprite>("SuperBombForeground");
+          superBomb.RegionRect = new Rect2(5f, 0, 0, 32f);
+        }
+        Rpc(nameof(throwBomb), GetGlobalMousePosition(), GetTree().GetNetworkUniqueId().ToString() + "_bomba" + _bombCount.ToString(), isSuperBomb);
       }
 
       MoveAndSlide(Velocity, new Vector2(0, -1));

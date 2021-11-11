@@ -26,14 +26,15 @@ public class Announcer : Label
   [RemoteSync]
   public void Announce(string announcement)
   {
+    // Só mostrar o anúncio se não tiver mostrando algum já.
     if (_timer.IsStopped())
     {
-      // Mostrar o anúncio.
       Visible = true;
       Text = announcement;
       _timer.Start();
       return;
     }
+    // Se não, adicionar a fila.
     _announcements.Add(announcement);
   }
 

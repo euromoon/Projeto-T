@@ -8,7 +8,9 @@ public class Projétil : KinematicBody2D
   private Vector2 velocity;
   private Sprite _sprite;
   private Area2D _explosionRange;
+  private float _strenght = 500f;
   public Personagem Thrower;
+  public bool IsSuperBomb;
 
   [RemoteSync]
   private void _createExplosionAnimation()
@@ -38,18 +40,24 @@ public class Projétil : KinematicBody2D
     Rpc(nameof(_createExplosionAnimation));
     foreach (var body in _explosionRange.GetOverlappingBodies())
     {
+      // só expelir se o objeto for um jogador
       switch (body)
       {
         case Personagem player:
           var distance = player.Position - Position;
+          // Aumentar em 5% a barra de super-bomba do jogador atingido.
+          player.Rset(nameof(player.SuperBombCharge), player.SuperBombCharge + .02f);
+          GD.Print("SuperBombCharge: " + player.SuperBombCharge * 100 + "%.");
           // força = (1 - distancia/200) * 500, a distancia maxima é 200, ou seja, quando a distancia for 200, a força será minima,
-          // porém quando for próxima de 0, será alta, sendo 500 o máximo (1 - 0) * 500.
-          var knockbackVelocity = 500f * new Vector2(1 - (Math.Abs(distance.x) / 200), 1 - (Math.Abs(distance.y) / 200)) * distance.Normalized();
+          // porém quando for próxima de 0, será alta, sendo 200 o máximo (ou 2000 quando for super-bomba) (1 - 0) * 500.
+          var knockbackVelocity = _strenght * new Vector2(1 - (Math.Abs(distance.x) / 200), 1 - (Math.Abs(distance.y) / 200)) * distance.Normalized();
           // Se a bomba pegar o próprio jogador, mudar sua velocidade,
           // se não, pedir ao outro jogador que mude sua velocidade.
           if (player.GetNetworkMaster() == GetTree().GetNetworkUniqueId())
           {
             player.Velocity = knockbackVelocity;
+            var superBomb = player.World.UI.GetNode<Sprite>("SuperBombForeground");
+            superBomb.RegionRect = new Rect2(5f, 0, player.SuperBombCharge * 24f, 32f);
             return;
           }
           player.RsetId(player.GetNetworkMaster(), nameof(player.Velocity), knockbackVelocity);
@@ -75,14 +83,22 @@ public class Projétil : KinematicBody2D
   {
     _sprite = GetNode<Sprite>("Sprite");
     _explosionRange = GetNode<Area2D>("ExplosionRange");
+    if (IsSuperBomb)
+    {
+      _sprite.Modulate = Colors.Gold;
+      _sprite.Scale *= 1.8f;
+      _strenght = 2000;
+    }
   }
 
   // Called every frame. 'delta' is the elapsed time since the previous frame.
   public override void _Process(float delta)
   {
-    velocity.y += 7f;
-    _sprite.RotationDegrees += velocity.x * .05f;
+    velocity.y += 7f; // gravidade
+    velocity.x -= .1f; // resistência do ar
+    _sprite.RotationDegrees += velocity.x * .05f; // rodar
     var collision = MoveAndCollide(velocity * delta);
+    // se colidir com algo, explodir
     if (IsNetworkMaster() && collision != null && collision.Collider != Thrower)
     {
       explode();

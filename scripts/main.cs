@@ -12,7 +12,7 @@ public class main : Node2D
   // Essa variável vai servir para associar o id dos jogadores ao objeto de seu personagem.
   private Dictionary<int, Personagem> _playerInfo = new Dictionary<int, Personagem>();
   public Announcer Announcer;
-  public bool _announcing = false;
+  public Node2D UI;
   public string LocalUsername;
   public List<Personagem> PlayersAlive = new List<Personagem>();
 
@@ -77,6 +77,7 @@ public class main : Node2D
   {
     _playerScene = GD.Load<PackedScene>("res://entities/Personagem.tscn");
     Announcer = GetNode<Announcer>("Announcer");
+    UI = GetNode<Node2D>("UI");
     GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
     GetTree().Connect("network_peer_disconnected", this, nameof(PlayerDisconnected));
     GetTree().Connect("server_disconnected", this, nameof(ServerDisconnected));
