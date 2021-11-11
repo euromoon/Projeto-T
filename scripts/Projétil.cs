@@ -10,6 +10,7 @@ public class Projétil : KinematicBody2D
   private Area2D _explosionRange;
   public Personagem Thrower;
 
+  [RemoteSync]
   private void _createExplosionAnimation()
   {
     // criar um sprite novo com a animação de explosão
@@ -34,7 +35,7 @@ public class Projétil : KinematicBody2D
 
   public void explode()
   {
-    _createExplosionAnimation();
+    Rpc(nameof(_createExplosionAnimation));
     foreach (var body in _explosionRange.GetOverlappingBodies())
     {
       switch (body)
@@ -74,10 +75,6 @@ public class Projétil : KinematicBody2D
   {
     _sprite = GetNode<Sprite>("Sprite");
     _explosionRange = GetNode<Area2D>("ExplosionRange");
-    if (IsNetworkMaster())
-    {
-      GetNode<Area2D>("Area2D").Connect("body_entered", this, nameof(_on_Area2D_body_entered));
-    }
   }
 
   // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -85,13 +82,8 @@ public class Projétil : KinematicBody2D
   {
     velocity.y += 7f;
     _sprite.RotationDegrees += velocity.x * .05f;
-    MoveAndCollide(velocity * delta);
-  }
-
-  public void _on_Area2D_body_entered(Node body)
-  {
-    // Não colidir consigo mesmo/jogador.
-    if (body != Thrower && body != this)
+    var collision = MoveAndCollide(velocity * delta);
+    if (IsNetworkMaster() && collision != null && collision.Collider != Thrower)
     {
       explode();
       Rpc(nameof(DeleteSelf));

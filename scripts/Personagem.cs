@@ -11,6 +11,9 @@ public class Personagem : KinematicBody2D
   // Declare member variables here. Examples:
   [Remote]
   public Vector2 Velocity = new Vector2(0, 0);
+  [RemoteSync]
+  public bool Dead = false;
+  public main World;
   private int max_speed = 240;
   private float acceleration = 8f;
   private int jumpHeight = 300;
@@ -26,13 +29,14 @@ public class Personagem : KinematicBody2D
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
+    World = GetParent<main>();
     sprite = GetNode<Sprite>("Sprite");
     GetNode<Label>("NameLabel").Text = Name;
     if (IsNetworkMaster()) GetNode<Sprite>("Aim").Visible = true;
   }
 
   [Remote]
-  public void _updatePosition(Vector2 pos)
+  public void UpdateRemotePosition(Vector2 pos)
   {
     Position = pos;
   }
@@ -51,39 +55,29 @@ public class Personagem : KinematicBody2D
   }
 
   [RemoteSync]
-  private void _announce(string announcement)
-  {
-    // criar uma caixa de texto
-    var announcementLabel = new Label();
-    var theme = new Theme();
-    // carregar a fonte do texto
-    announcementLabel.AddFontOverride("font", GD.Load<Font>("res://other_assets/font.tres"));
-    announcementLabel.Text = announcement; // mudar texto na caixa de texto
-    announcementLabel.RectSize = new Vector2(1024, 60); // tamanho da caixa do texto
-    announcementLabel.RectPivotOffset = new Vector2(512, 0); // colocar o centro da caixa no meio dela
-    announcementLabel.Align = Label.AlignEnum.Center; // alinhar o texto com o centro
-    var timer = new Timer(); // timer de 2 segundos para apagar o anúncio
-    timer.WaitTime = 3;
-    timer.OneShot = true; // não reiniciar o timer após acabar
-    timer.Autostart = true;
-    announcementLabel.AddChild(timer);
-    GetParent().AddChild(announcementLabel);
-    // conectar o evento do fim do timer com a função que apaga o texto
-    timer.Connect("timeout", announcementLabel, "queue_free");
-  }
-
-  [RemoteSync]
   private void _die()
   {
     // anunciar a morte do jogador.
-    _announce(Name + " foi eliminado");
-    QueueFree();
+    World.Announcer.Announce(Name + " foi eliminado");
+    Dead = true;
+    // Só reiniciar o jogo se for o servidor.
+    if (GetTree().IsNetworkServer())
+    {
+      var playersRemaining = World.PlayersAlive;
+      playersRemaining.Remove(this);
+      if (playersRemaining.Count == 1)
+      {
+        // anunciar vencedor
+        World.Announcer.Rpc(nameof(World.Announcer.Announce), playersRemaining[0].Name + " venceu!");
+        World.RestartGame();
+      }
+    }
   }
 
   // Called every frame. 'delta' is the elapsed time since the previous frame.
   public override void _Process(float delta)
   {
-    if (IsNetworkMaster())
+    if (IsNetworkMaster() && !Dead)
     {
       if (Position.y > 760)
       {
@@ -159,7 +153,7 @@ public class Personagem : KinematicBody2D
       }
 
       MoveAndSlide(Velocity, new Vector2(0, -1));
-      Rpc(nameof(_updatePosition), Position);
+      Rpc(nameof(UpdateRemotePosition), Position);
       Rset(nameof(Velocity), Velocity);
     }
     // Deformar a bola quando cair/subir.

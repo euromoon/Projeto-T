@@ -1,9 +1,11 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://scripts/Plataforma.cs" type="Script" id=1]
 [ext_resource path="res://tilsets/ground.tres" type="TileSet" id=2]
 [ext_resource path="res://textures/wall.png" type="Texture" id=3]
 [ext_resource path="res://textures/background-3.png" type="Texture" id=4]
+[ext_resource path="res://other_assets/font.tres" type="DynamicFont" id=5]
+[ext_resource path="res://scripts/Announcer.cs" type="Script" id=6]
 [ext_resource path="res://scripts/main.cs" type="Script" id=7]
 
 [sub_resource type="TileSet" id=5]
@@ -189,3 +191,18 @@ shape = SubResource( 6 )
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="Background/StaticBody2D"]
 occluder = SubResource( 9 )
+
+[node name="Announcer" type="Label" parent="."]
+margin_right = 1024.0
+margin_bottom = 14.0
+rect_pivot_offset = Vector2( 512, 0 )
+custom_fonts/font = ExtResource( 5 )
+align = 1
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Timer" parent="Announcer"]
+wait_time = 1.5
+one_shot = true
