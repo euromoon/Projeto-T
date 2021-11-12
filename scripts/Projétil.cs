@@ -46,8 +46,7 @@ public class Projétil : KinematicBody2D
         case Personagem player:
           var distance = player.Position - Position;
           // Aumentar em 5% a barra de super-bomba do jogador atingido.
-          player.Rset(nameof(player.SuperBombCharge), player.SuperBombCharge + .02f);
-          GD.Print("SuperBombCharge: " + player.SuperBombCharge * 100 + "%.");
+          player.Rset(nameof(player.SuperBombCharge), player.SuperBombCharge + 4f);
           // força = (1 - distancia/200) * 500, a distancia maxima é 200, ou seja, quando a distancia for 200, a força será minima,
           // porém quando for próxima de 0, será alta, sendo 200 o máximo (ou 2000 quando for super-bomba) (1 - 0) * 500.
           var knockbackVelocity = _strenght * new Vector2(1 - (Math.Abs(distance.x) / 200), 1 - (Math.Abs(distance.y) / 200)) * distance.Normalized();
@@ -56,8 +55,9 @@ public class Projétil : KinematicBody2D
           if (player.GetNetworkMaster() == GetTree().GetNetworkUniqueId())
           {
             player.Velocity = knockbackVelocity;
+            player.World.UI.GetNode<Label>("Percentage").Text = Math.Ceiling(player.SuperBombCharge) + "%";
             var superBomb = player.World.UI.GetNode<Sprite>("SuperBombForeground");
-            superBomb.RegionRect = new Rect2(5f, 0, player.SuperBombCharge * 24f, 32f);
+            superBomb.RegionRect = new Rect2(5f, 0, player.SuperBombCharge / 100 * 24f, 32f);
             return;
           }
           player.RsetId(player.GetNetworkMaster(), nameof(player.Velocity), knockbackVelocity);

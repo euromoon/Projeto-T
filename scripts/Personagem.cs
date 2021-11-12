@@ -157,7 +157,7 @@ public class Personagem : KinematicBody2D
         // 0.999999999, então é necessário checar se o módulo da diferença entre 1 e SuperBombCharge é
         // pequeno a ponto de ser irrelevante, ao invés de checar se são literalmente idênticos.
         // recomendo ler mais sobre em: https://stackoverflow.com/questions/588004/is-floating-point-math-broken
-        if ((Math.Abs(1 - SuperBombCharge) < 0.01))
+        if (SuperBombCharge == 100f)
         {
           isSuperBomb = true;
           SuperBombCharge = 0;
