@@ -10,13 +10,12 @@ public class Plataformas : TileMap
 
   private void onTimerTimeout()
   {
-    if (_tileDeleteQueue.Count == 18)
-    {
-      _timer.WaitTime = 15; 
-    }
     // Deletar as tiles na ordem estabelecida anteriormente.
     SetCell(_tileDeleteQueue[0], 8, -1);
     _tileDeleteQueue.RemoveAt(0);
+    if (_tileDeleteQueue.Count == 0)
+      _timer.Stop();
+
   }
 
   // Called when the node enters the scene tree for the first time.

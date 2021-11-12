@@ -127,16 +127,14 @@ public class Personagem : KinematicBody2D
       }
       else
       {
+        if (Velocity.y > 200)
+          Velocity.y *= -.8f;
         Scale = new Vector2(1f, 1f);
         doubleJumpAvailable = true;
         // Pulo
         if (Input.IsActionJustPressed("ui_up"))
         {
           Velocity.y = -jumpHeight;
-        }
-        else
-        {
-          Velocity.y = 0;
         }
       }
 

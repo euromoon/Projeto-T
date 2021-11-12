@@ -48,7 +48,7 @@ tile_data = PoolIntArray( -327687, 0, 0, -327686, 0, 0, -327685, 0, 0, -327684, 
 script = ExtResource( 3 )
 
 [node name="DeleteTilesTimer" type="Timer" parent="Background/Plataformas"]
-wait_time = 40.0
+wait_time = 15.0
 autostart = true
 
 [node name="Announcer" type="Label" parent="."]
@@ -74,7 +74,6 @@ position = Vector2( 25, 25 )
 texture = ExtResource( 8 )
 
 [node name="SuperBombForeground" type="Sprite" parent="UI"]
-modulate = Color( 0.811765, 0.533333, 0.0941176, 1 )
 position = Vector2( 25, 9 )
 texture = ExtResource( 8 )
 centered = false
