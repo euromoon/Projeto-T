@@ -27,13 +27,15 @@ public class Personagem : KinematicBody2D
   private int _frameCount = 0;
   private Vector2 _distanceToUpdate = new Vector2(0, 0);
   private int _bombCount = 0;
+  private Label _usernameLabel;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
     World = GetParent<main>();
     sprite = GetNode<Sprite>("Sprite");
-    GetNode<Label>("NameLabel").Text = Name;
+    _usernameLabel = GetNode<Label>("NameLabel");
+    _usernameLabel.Text = Name;
     if (IsNetworkMaster()) GetNode<Sprite>("Aim").Visible = true;
   }
 
@@ -157,7 +159,7 @@ public class Personagem : KinematicBody2D
         // 0.999999999, então é necessário checar se o módulo da diferença entre 1 e SuperBombCharge é
         // pequeno a ponto de ser irrelevante, ao invés de checar se são literalmente idênticos.
         // recomendo ler mais sobre em: https://stackoverflow.com/questions/588004/is-floating-point-math-broken
-        if (SuperBombCharge == 100f)
+        if (SuperBombCharge >= 100f)
         {
           isSuperBomb = true;
           SuperBombCharge = 0;
@@ -184,5 +186,7 @@ public class Personagem : KinematicBody2D
       Scale = new Vector2(Math.Min(Scale.x + 0.01f, 1.1f), Math.Max(Scale.y - 0.01f, .9f));
     }
     sprite.RotationDegrees += Velocity.x * 0.04f;
+    // Manter o username centralizado no personagem.
+    _usernameLabel.RectPosition = new Vector2(_usernameLabel.RectSize.x / -2, -35);
   }
 }

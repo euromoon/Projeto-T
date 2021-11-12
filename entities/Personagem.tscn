@@ -22,11 +22,11 @@ collision_mask = 2
 script = ExtResource( 2 )
 
 [node name="NameLabel" type="Label" parent="."]
-margin_left = -37.0
+margin_left = -32.0
 margin_top = -33.0
-margin_right = 37.0
+margin_right = 32.0
 margin_bottom = -15.0
-rect_pivot_offset = Vector2( 37, 0 )
+rect_pivot_offset = Vector2( 64, 0 )
 custom_fonts/font = SubResource( 6 )
 custom_styles/normal = SubResource( 7 )
 text = "username"

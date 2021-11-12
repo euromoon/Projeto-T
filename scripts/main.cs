@@ -43,6 +43,11 @@ public class main : Node2D
   private void PlayerConnected(int id)
   {
     RpcId(id, nameof(RegisterPlayer), _myCharacter.Position, _myCharacter.Name);
+    if (GetTree().IsNetworkServer())
+    {
+      var plataformas = GetNode<Node2D>("Background").GetNode<Plataformas>("Plataformas");
+      plataformas.RpcId(id, nameof(plataformas.SetBottomCellsAs), plataformas.BottomCells);
+    }
   }
 
   private void PlayerDisconnected(int id)
@@ -70,6 +75,8 @@ public class main : Node2D
       player.Position = new Vector2(_rand.Next(0, 1024), _rand.Next(0, 400)); // Criar uma posição nova para cada um.
       player.Rpc(nameof(player.UpdateRemotePosition), player.Position); // Atualizar a posição para os outros jogadores online.
     }
+    var plataformas =  GetNode<Node2D>("Background").GetNode<Plataformas>("Plataformas");
+    plataformas.Rpc(nameof(plataformas.Reset)); // Resetar as plataformas.
   }
 
   // Called when the node enters the scene tree for the first time.
