@@ -6,15 +6,19 @@ public class main : Node2D
 {
   // Declare member variables here. Examples:
 
+  public Announcer Announcer;
+  public Node2D UI;
+  public string LocalUsername;
+  public List<Personagem> PlayersAlive = new List<Personagem>();
   private PackedScene _playerScene;
   private Personagem _myCharacter;
   private Random _rand = new Random();
   // Essa variável vai servir para associar o id dos jogadores ao objeto de seu personagem.
   private Dictionary<int, Personagem> _playerInfo = new Dictionary<int, Personagem>();
-  public Announcer Announcer;
-  public Node2D UI;
-  public string LocalUsername;
-  public List<Personagem> PlayersAlive = new List<Personagem>();
+  private Timer _bombFallTimer;
+  private PackedScene _projetil = GD.Load<PackedScene>("res://entities/bomba.tscn");
+  private int _bombCount;
+
 
   private Personagem SpawnSelf()
   {
@@ -63,6 +67,23 @@ public class main : Node2D
     GetTree().ChangeSceneTo(GD.Load<PackedScene>("res://menu.tscn"));
   }
 
+  private void _bombFall()
+  {
+    _bombCount++;
+    var bomba = _projetil.Instance<Projétil>();
+    bomba.AddCollisionExceptionWith(this); // não colidir com o próprio personagem
+    bomba.Position = new Vector2(_rand.Next(0, 1024), 25);
+    bomba.Name = _bombCount.ToString() + "_bomba";
+    bomba.IsSuperBomb = true;
+    Rpc(nameof(_spawnObjectRemote), bomba);
+  }
+
+  [RemoteSync]
+  private void _spawnObjectRemote(Godot.Node obj)
+  {
+    AddChild(obj);
+  }
+
   public void RestartGame()
   {
     PlayersAlive.Clear(); // Limpar a lista de jogadores vivos.
@@ -75,7 +96,7 @@ public class main : Node2D
       player.Position = new Vector2(_rand.Next(0, 1024), _rand.Next(0, 400)); // Criar uma posição nova para cada um.
       player.Rpc(nameof(player.UpdateRemotePosition), player.Position); // Atualizar a posição para os outros jogadores online.
     }
-    var plataformas =  GetNode<Node2D>("Background").GetNode<Plataformas>("Plataformas");
+    var plataformas = GetNode<Node2D>("Background").GetNode<Plataformas>("Plataformas");
     plataformas.Rpc(nameof(plataformas.Reset)); // Resetar as plataformas.
   }
 
@@ -83,6 +104,7 @@ public class main : Node2D
   public override void _Ready()
   {
     _playerScene = GD.Load<PackedScene>("res://entities/Personagem.tscn");
+    _bombFallTimer = GetNode<Timer>("BombFallTimer");
     Announcer = GetNode<Announcer>("Announcer");
     UI = GetNode<Node2D>("UI");
     GetTree().Connect("network_peer_connected", this, nameof(PlayerConnected));
@@ -90,6 +112,8 @@ public class main : Node2D
     GetTree().Connect("server_disconnected", this, nameof(ServerDisconnected));
     _myCharacter = SpawnSelf();
     _playerInfo.Add(GetTree().GetNetworkUniqueId(), _myCharacter);
+    if (GetTree().IsNetworkServer())
+      _bombFallTimer.Connect("timeout", this, nameof(_bombFall));
   }
 
   // Called every frame. 'delta' is the elapsed time since the previous frame.

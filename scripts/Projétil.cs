@@ -44,6 +44,7 @@ public class Projétil : KinematicBody2D
       switch (body)
       {
         case Personagem player:
+          if (player == Thrower) return;
           var distance = player.Position - Position;
           // Aumentar em 5% a barra de super-bomba do jogador atingido.
           player.Rset(nameof(player.SuperBombCharge), player.SuperBombCharge + 4f);

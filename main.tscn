@@ -97,3 +97,7 @@ centered = false
 offset = Vector2( -11, 0 )
 region_enabled = true
 region_rect = Rect2( 5, 0, 0, 32 )
+
+[node name="BombFallTimer" type="Timer" parent="."]
+wait_time = 6.0
+autostart = true
